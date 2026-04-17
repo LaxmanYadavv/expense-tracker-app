@@ -13,6 +13,13 @@ st.caption("Your first Python web app")
 with st.sidebar:
     st.header("Add expense")
     expense_date = st.date_input("Date", value=date.today())
+    
+    # NEW: Currency selector added here
+    currency = st.selectbox(
+        "Currency",
+        ["₹ (INR)", "$ (USD)", "€ (EUR)", "£ (GBP)"]
+    )
+    
     category = st.selectbox(
         "Category",
         ["Food", "Travel", "Shopping", "Bills", "Health", "Entertainment", "Other"]
@@ -28,6 +35,7 @@ with st.sidebar:
                 {
                     "Date": str(expense_date),
                     "Category": category,
+                    "Currency": currency[0],  # Grabs just the symbol (₹, $, etc.)
                     "Amount": float(amount),
                     "Note": note.strip()
                 }
@@ -45,10 +53,13 @@ else:
     count = len(df)
     average = df["Amount"].mean()
 
+    # Determine which currency symbol to show (defaults to ₹ if missing)
+    symbol = df["Currency"].iloc[0] if "Currency" in df.columns else "₹"
+
     c1, c2, c3 = st.columns(3)
-    c1.metric("Total spent", f"₹{total:,.2f}")
+    c1.metric("Total spent", f"{symbol}{total:,.2f}")
     c2.metric("Number of expenses", count)
-    c3.metric("Average expense", f"₹{average:,.2f}")
+    c3.metric("Average expense", f"{symbol}{average:,.2f}")
 
     st.subheader("Filter")
     selected_category = st.selectbox(
